@@ -1,77 +1,52 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import StyleComparison
+from .tasks import style_comparison_task
 import base64
 from io import BytesIO
-from django.shortcuts import render
 from PIL import Image
-from pillow_heif import register_heif_opener
-import torch 
-import torch.nn.functional as F 
-import torchvision.transforms as transforms 
-from muse.style import style_encoder
-from .models import ImageUpload
-
-
-def upload_image(request):
-    if request.method == 'POST' and request.FILES.get('image'):
-        image_file = request.FILES['image']
-        img = ImageUpload(image = image_file, description = request.POST.get('description', ''))
-        img.save(using='mongodb')
-        
-register_heif_opener()
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-style_enc = style_encoder().to(device)
-
-model_path = r"C:\Users\nishi\code\MUSE\muse\muse\saved model\muse_model_epoch_49.pth"
- 
-checkpoint = torch.load(model_path, map_location=device)
-state_dict = checkpoint['style_enc_state_dict']
-
-new_state_dict = {}
-for k, v in state_dict.items():
-    if k.startswith('module.'):
-        new_state_dict[k[7:]] = v
-    else:
-        new_state_dict[k] = v
-
-style_enc.load_state_dict(new_state_dict)
-style_enc.eval()
-
-transform = transforms.Compose([
-    transforms.Resize((224,224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485,0.456,0.406],
-                         std=[0.229,0.224,0.225])
-])
-
-def image_to_base64(img):
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
-
-def compare_image(request):
-    if request.method == 'POST':
-
-        if 'image1' not in request.FILES or 'image2' not in request.FILES:
-            return render(request, "home_page.html", {"error": "Please upload both images!"})
-
-        try:
-            img1_file = request.FILES['image1']
-            img2_file = request.FILES['image2']
-
-            img1 = Image.open(img1_file).convert('RGB')
-            img2 = Image.open(img2_file).convert('RGB')
-
-            
-            return render(request, "result.html", {
-                "similarity": round(similarity * 100, 2),
-                "img1_data": image_to_base64(img1),
-                "img2_data": image_to_base64(img2)
-            })
-
-        except Exception as e:
-            return render(request, "home_page.html", {"error": f"Error: {str(e)}"})
-            
-    return render(request, "home_page.html")
 
 def score(request):
+    """The main upload page"""
     return render(request, "home_page.html")
+
+def compare_image(request):
+    """View that starts the comparison process"""
+    if request.method == 'POST':
+        file1 = request.FILES.get('image1')
+        file2 = request.FILES.get('image2')
+
+        if not file1 or not file2:
+            return render(request, "home_page.html", {"error": "Please select both images!"})
+
+        # 1. Create the comparison record in the database
+        # This gets a unique ID (e.g., #15)
+        obj = StyleComparison.objects.create(
+            image1=file1,
+            image2=file2,
+            status='PENDING'
+        )
+
+        # 2. Tell the Celery Worker to start processing in the background
+        # We use .delay() to make it asynchronous
+        style_comparison_task.delay(obj.id)
+
+        # 3. Immediately send the user to a loading/status page
+        # We pass the ID so the page knows which task to track
+        return redirect('check_status', task_id=obj.id)
+
+    return render(request, "home_page.html")
+
+def check_status(request, task_id):
+
+    task = get_object_or_404(StyleComparison, id=task_id)
+
+    if task.status == 'COMPLETED':
+        return render(request, "result.html", {
+            "similarity": task.score,
+            "task": task
+        })
+
+    elif task.status == 'FAILED':
+        return render(request, "home_page.html", {"error": "The model failed to process your images."})
+
+    return render(request, "load.html", {"task": task})

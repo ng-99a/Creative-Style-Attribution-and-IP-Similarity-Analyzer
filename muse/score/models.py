@@ -11,6 +11,9 @@ class StyleComparison(models.Model):
     status = models.CharField(max_length=20, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Comparison {self.id} - {self.status}"
+
 class ImageUpload(models.Model):
 
     image = models.ImageField(upload_to='uploded/%y/%m/%d/')

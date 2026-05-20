@@ -5,26 +5,52 @@ import torch
 import torch.nn.functional as F
 from django.conf import settings
 from pathlib import Path
-import torchvision.transforms as transform
-from muse.style import modeloder
+import torchvision.transforms as transforms
+from muse.style import style_encoder
+import logging
+
+logger = logging.getLogger(__name__)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = modeloder().to(device)
+
+transform = transforms.Compose([
+    transforms.Resize((224,224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485,0.456,0.406],
+                         std=[0.229,0.224,0.225])
+])
+
+# Load the model once when the worker starts
+print("--- Loading MUSE model into memory (this may take a few seconds) ---")
+logger.info("Loading MUSE model into memory...")
 model_path = Path(settings.BASE_DIR) / "muse" / "saved model" / "muse_model_epoch_49.pth"
 
-checkpoint = torch.load(model_path, map_location=device)
-saved_weights = checkpoint['model_state_dict']
-clean_weights = {k[7:] if k.startswith('module.') else k: v for k, v in saved_weights.items()}
-model.load_state_dict(clean_weights)
-model.eval()
+if not model_path.exists():
+    print(f"--- CRITICAL: Model file not found at {model_path} ---")
+    logger.error(f"CRITICAL: Model file not found at {model_path}")
+    model = None 
+else:
+    model = style_encoder().to(device)
+    checkpoint = torch.load(model_path, map_location=device)
+    saved_weights = checkpoint['style_enc_state_dict']
+    clean_weights = {k[7:] if k.startswith('module.') else k: v for k, v in saved_weights.items()}
+    model.load_state_dict(clean_weights)
+    model.eval()
+    print("--- MUSE model loaded successfully and ready for tasks! ---")
+    logger.info("MUSE model loaded successfully and ready for tasks.")
 
 @shared_task
-def style_comparision_task(task_id):
-    task = StyleComparison.objects.get(id=task_id)
-    task.status = 'RUNNING'
-    task.save()
-
+def style_comparison_task(task_id):
     try:
+        if model is None:
+            raise FileNotFoundError("Model was not loaded correctly. Check worker logs.")
+            
+        task = StyleComparison.objects.get(id=task_id)
+        task.status = 'RUNNING'
+        task.save()
+
+        logger.info(f"Starting comparison for task {task_id}")
+        
         img1 = Image.open(task.image1.path).convert('RGB')
         img2 = Image.open(task.image2.path).convert('RGB')
 
@@ -40,8 +66,8 @@ def style_comparision_task(task_id):
 
             similarity = torch.matmul(vec1, vec2.T).item()
 
-            task.score = similarity
-            task.status = 'SUCCESS'
+            task.score = similarity * 100
+            task.status = 'COMPLETED'
             task.save()
 
     except Exception as e:

@@ -64,11 +64,11 @@
     <div class="image-box">
         <div class="image-container">
             <p><strong>Target Image</strong></p>
-            <img src="data:image/png;base64,{{ img1_data }}" class="display-img">
+            <img src="{{ task.image1.url }}" class="display-img">
         </div>
         <div class="image-container">
             <p><strong>Reference Image</strong></p>
-            <img src="data:image/png;base64,{{ img2_data }}" class="display-img">
+            <img src="{{ task.image2.url }}" class="display-img">
         </div>
     </div>
 

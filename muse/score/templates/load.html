@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- This tag tells the browser to refresh every 3 seconds -->
+    <meta http-equiv="refresh" content="3">
+    <title>Analyzing Styles...</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f4; }
+        .loader { border: 16px solid #f3f3f3; border-top: 16px solid #3498db; border-radius: 50%; width: 80px; height: 80px; animation: spin 2s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .status-box { background: white; padding: 40px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="status-box">
+        <div class="loader"></div>
+        <br>
+        <h1>Analyzing Your Art...</h1>
+        <p>Our AI is comparing the artistic styles of your images.</p>
+        <p style="color: #7f8c8d;">Status: <strong>{{ task.status }}</strong></p>
+        <p>Please do not close this page.</p>
+    </div>
+</body>
+</html>
