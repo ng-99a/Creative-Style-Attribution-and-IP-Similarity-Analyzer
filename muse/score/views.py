@@ -7,7 +7,15 @@ import torch
 import torch.nn.functional as F 
 import torchvision.transforms as transforms 
 from muse.style import style_encoder
+from .models import ImageUpload
 
+
+def upload_image(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        image_file = request.FILES['image']
+        img = ImageUpload(image = image_file, description = request.POST.get('description', ''))
+        img.save(using='mongodb')
+        
 register_heif_opener()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,18 +61,7 @@ def compare_image(request):
             img1 = Image.open(img1_file).convert('RGB')
             img2 = Image.open(img2_file).convert('RGB')
 
-            t1 = transform(img1).unsqueeze(0).to(device)
-            t2 = transform(img2).unsqueeze(0).to(device)
-
-            with torch.no_grad():
-                _, _, vec1 = style_enc(t1)
-                _, _, vec2 = style_enc(t2)
-
-                vec1 = F.normalize(vec1, dim=-1)
-                vec2 = F.normalize(vec2, dim=-1)
-
-                similarity = torch.matmul(vec1, vec2.T).item()
-
+            
             return render(request, "result.html", {
                 "similarity": round(similarity * 100, 2),
                 "img1_data": image_to_base64(img1),
