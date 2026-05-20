@@ -20,7 +20,6 @@ transform = transforms.Compose([
                          std=[0.229,0.224,0.225])
 ])
 
-# Load the model once when the worker starts
 print("--- Loading MUSE model into memory (this may take a few seconds) ---")
 logger.info("Loading MUSE model into memory...")
 model_path = Path(settings.BASE_DIR) / "muse" / "saved model" / "muse_model_epoch_49.pth"

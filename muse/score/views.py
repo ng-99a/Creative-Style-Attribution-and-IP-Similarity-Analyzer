@@ -18,20 +18,14 @@ def compare_image(request):
         if not file1 or not file2:
             return render(request, "home_page.html", {"error": "Please select both images!"})
 
-        # 1. Create the comparison record in the database
-        # This gets a unique ID (e.g., #15)
         obj = StyleComparison.objects.create(
             image1=file1,
             image2=file2,
             status='PENDING'
         )
 
-        # 2. Tell the Celery Worker to start processing in the background
-        # We use .delay() to make it asynchronous
         style_comparison_task.delay(obj.id)
 
-        # 3. Immediately send the user to a loading/status page
-        # We pass the ID so the page knows which task to track
         return redirect('check_status', task_id=obj.id)
 
     return render(request, "home_page.html")
@@ -42,7 +36,7 @@ def check_status(request, task_id):
 
     if task.status == 'COMPLETED':
         return render(request, "result.html", {
-            "similarity": task.score,
+            "similarity": round(task.score, 2),
             "task": task
         })
 
