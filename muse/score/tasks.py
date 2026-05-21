@@ -20,7 +20,7 @@ transform = transforms.Compose([
                          std=[0.229,0.224,0.225])
 ])
 
-print("--- Loading MUSE model into memory (this may take a few seconds) ---")
+print("Loading MUSE model into memory")
 logger.info("Loading MUSE model into memory...")
 model_path = Path(settings.BASE_DIR) / "muse" / "saved model" / "muse_model_epoch_49.pth"
 
@@ -35,14 +35,14 @@ else:
     clean_weights = {k[7:] if k.startswith('module.') else k: v for k, v in saved_weights.items()}
     model.load_state_dict(clean_weights)
     model.eval()
-    print("--- MUSE model loaded successfully and ready for tasks! ---")
-    logger.info("MUSE model loaded successfully and ready for tasks.")
+    print("MUSE model loaded successfully")
+    logger.info("MUSE model loaded successfully")
 
 @shared_task
 def style_comparison_task(task_id):
     try:
         if model is None:
-            raise FileNotFoundError("Model was not loaded correctly. Check worker logs.")
+            raise FileNotFoundError("Model was not loaded correctly")
             
         task = StyleComparison.objects.get(id=task_id)
         task.status = 'RUNNING'

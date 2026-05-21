@@ -1,16 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import StyleComparison
 from .tasks import style_comparison_task
-import base64
-from io import BytesIO
-from PIL import Image
 
 def score(request):
-    """The main upload page"""
     return render(request, "home_page.html")
 
 def compare_image(request):
-    """View that starts the comparison process"""
     if request.method == 'POST':
         file1 = request.FILES.get('image1')
         file2 = request.FILES.get('image2')
