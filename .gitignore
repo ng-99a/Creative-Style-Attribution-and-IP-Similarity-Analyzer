@@ -3,17 +3,19 @@ __pycache__/
 *.py[cod]
 *$py.class
 .venv/
+.venv_linux/
 env/
 venv/
 
 # Django
 db.sqlite3
 /static/
-/media/
+**/media/
 .env
 
 # Model Files (Optional, but recommended if >100MB)
 *.pth
+!muse/muse/saved model/muse_model_epoch_49.pth
 
 # IDEs
 .vscode/

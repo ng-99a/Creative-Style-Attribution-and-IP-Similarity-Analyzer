@@ -1,48 +1,315 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Art Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUSE - Fine Art Portal</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f9f9f9;
-        }
-        h1 {
-            margin-top: 40px;
-        }
-        .options {
+            background: #f8f9fa;
+            color: #202124;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 60px;
+            flex-direction: column;
         }
-        .option {
-            background: #4CAF50;
-            color: white;
-            padding: 20px 40px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
+
+        /* Navbar */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #dadce0;
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #202124;
             text-decoration: none;
-            transition: background 0.3s ease;
+            font-family: 'Playfair Display', serif;
         }
-        .option:hover {
-            background: #45a049;
+
+        .navbar-brand span {
+            color: #008abf;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            background: #e8f0fe;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #5f6368;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.15s ease;
+        }
+
+        .nav-link:hover {
+            color: #202124;
+            background: #f1f3f4;
+        }
+
+        .nav-link.active {
+            color: #008abf;
+            background: #e8f0fe;
+            font-weight: 600;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: #ffffff;
+            border-bottom: 1px solid #dadce0;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #008abf;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 14px;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #202124;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.02rem;
+            color: #5f6368;
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.55;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 960px;
+            margin: 45px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .art-card {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .art-card:hover {
+            border-color: #008abf;
+            box-shadow: 0 6px 18px rgba(0, 138, 191, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .art-card-header {
+            background: linear-gradient(135deg, #e8f0fe 0%, #f1f3f4 100%);
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .art-card-icon {
+            font-size: 3.5rem;
+            transition: transform 0.25s ease;
+        }
+
+        .art-card:hover .art-card-icon {
+            transform: scale(1.08);
+        }
+
+        .art-card-body {
+            padding: 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .art-card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .art-card-text {
+            font-size: 0.9rem;
+            color: #5f6368;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .art-card-btn {
+            background: #008abf;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: center;
+            align-self: flex-start;
+            transition: background 0.2s ease;
+        }
+
+        .art-card:hover .art-card-btn {
+            background: #0075a3;
+        }
+
+        /* Showcase Banner */
+        .showcase-box {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .showcase-item h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #202124;
+            margin-bottom: 4px;
+        }
+
+        .showcase-item p {
+            font-size: 0.82rem;
+            color: #5f6368;
         }
     </style>
 </head>
+
 <body>
-    <h1>Welcome to the Art Portal</h1>
-    <p>Select an option below to explore:</p>
 
-    <div class="options">
-        <!-- Button 1 -->
-        <a href="/score/" class="option">Check if Your Art is Real</a>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">
+            MUSE <span>ART</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/score/explore/" class="nav-link">Explore Art</a>
+            <a href="/score/batch/" class="nav-link">Analyze Art</a>
+        </div>
+    </nav>
 
-        <!-- Button 2 -->
-        <a href="#" class="option">Explore Multiple Arts</a>
+    <div class="hero-banner">
+        <span class="hero-tag">Fine Art Portal</span>
+        <h1 class="hero-title">Explore & Analyze Artworks</h1>
+        <p class="hero-subtitle">Browse artwork collections or run visual style comparisons across your artwork images.
+        </p>
     </div>
+
+    <div class="main-container">
+        <div class="gallery-grid">
+            <!-- Explore Card -->
+            <a href="/score/explore/" class="art-card">
+                <div class="art-card-header">
+                    <span class="art-card-icon">🖼️</span>
+                </div>
+                <div class="art-card-body">
+                    <div>
+                        <h3 class="art-card-title">Explore Artworks</h3>
+                        <p class="art-card-text">Upload artwork images to view, inspect, and browse different artistic
+                            creations in your gallery collection.</p>
+                    </div>
+                    <div class="art-card-btn">Explore Artworks →</div>
+                </div>
+            </a>
+
+            <!-- Compare / Analyze Card -->
+            <a href="/score/batch/" class="art-card">
+                <div class="art-card-header" style="background: linear-gradient(135deg, #e8f0fe 0%, #e0f2fe 100%);">
+                    <span class="art-card-icon">🎨</span>
+                </div>
+                <div class="art-card-body">
+                    <div>
+                        <h3 class="art-card-title">Style Similarity Analyzer</h3>
+                        <p class="art-card-text">Upload multiple artwork images to compare their visual style similarity
+                            scores and discover matching style clusters.</p>
+                    </div>
+                    <div class="art-card-btn">Analyze Artworks →</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="showcase-box">
+            <div class="showcase-item">
+                <h4>Artwork Gallery</h4>
+                <p>View & inspect artwork collections</p>
+            </div>
+            <div class="showcase-item">
+                <h4>Style Matching</h4>
+                <p>Compare artwork visual similarities</p>
+            </div>
+            <div class="showcase-item">
+                <h4>Cluster Discovery</h4>
+                <p>Group matching artistic styles</p>
+            </div>
+        </div>
+    </div>
+
 </body>
+
 </html>

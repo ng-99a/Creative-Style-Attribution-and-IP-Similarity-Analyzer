@@ -4,41 +4,69 @@
     <meta charset="UTF-8">
     <meta http-equiv="refresh" content="2">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processing Comparison - MUSE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Analyzing Artworks - MUSE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: #f8f9fa; color: #202124; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        body {
+            background: #f8f9fa;
+            color: #202124;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
         .navbar {
             background: #ffffff;
             border-bottom: 1px solid #dadce0;
-            padding: 0 30px;
-            height: 60px;
+            padding: 0 40px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
+
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.15rem;
+            gap: 10px;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #202124;
             text-decoration: none;
+            font-family: 'Playfair Display', serif;
         }
-        .navbar-brand span { color: #008abf; }
-        .nav-links { display: flex; gap: 20px; }
+
+        .navbar-brand span {
+            color: #008abf;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            background: #e8f0fe;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .nav-links { display: flex; gap: 16px; }
+
         .nav-link {
             text-decoration: none;
             color: #5f6368;
             font-size: 0.9rem;
             font-weight: 500;
-            padding: 18px 0;
-            border-bottom: 3px solid transparent;
+            padding: 8px 16px;
+            border-radius: 20px;
         }
-        .nav-link.active { color: #202124; border-bottom-color: #008abf; }
+
+        .nav-link.active {
+            color: #008abf;
+            background: #e8f0fe;
+            font-weight: 600;
+        }
 
         .main-container {
             max-width: 500px;
@@ -53,7 +81,7 @@
             border-radius: 12px;
             padding: 40px;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(60,64,67,0.08);
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
         }
 
         .spinner {
@@ -71,7 +99,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        .title { font-size: 1.3rem; font-weight: 600; color: #202124; margin-bottom: 8px; }
+        .title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: #202124; margin-bottom: 8px; }
         .desc { font-size: 0.9rem; color: #5f6368; line-height: 1.45; }
         .badge { display: inline-block; margin-top: 20px; background: #e8f0fe; color: #1a73e8; padding: 4px 14px; border-radius: 16px; font-size: 0.82rem; font-weight: 500; }
     </style>
@@ -79,20 +107,23 @@
 <body>
 
 <nav class="navbar">
-    <a href="/" class="navbar-brand"><span>MUSE</span> | Art Similarity</a>
+    <a href="/" class="navbar-brand">
+        MUSE <span>ART</span>
+    </a>
     <div class="nav-links">
         <a href="/" class="nav-link">Home</a>
-        <a href="/score/" class="nav-link active">2-Image Comparison</a>
-        <a href="/score/batch/" class="nav-link">Batch Analysis</a>
+        <a href="/score/explore/" class="nav-link">Explore Art</a>
+        <a href="/score/batch/" class="nav-link active">Analyze Art</a>
     </div>
+
 </nav>
 
 <div class="main-container">
     <div class="card">
         <div class="spinner"></div>
-        <div class="title">Analyzing Image Vectors</div>
-        <div class="desc">Running MUSE model inference to calculate cosine similarity between style embeddings...</div>
-        <div class="badge">Status: {{ task.status }}</div>
+        <div class="title">Analyzing Artworks</div>
+        <div class="desc">Comparing artistic styles across your images to discover matching clusters...</div>
+        <div class="badge">Status: {{ batch.status }}</div>
     </div>
 </div>
 

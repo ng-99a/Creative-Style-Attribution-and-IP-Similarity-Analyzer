@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Similarity Results - MUSE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: #f8f9fa;
+            color: #202124;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #dadce0;
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #202124;
+            text-decoration: none;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .navbar-brand span {
+            color: #008abf;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            background: #e8f0fe;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .nav-links { display: flex; gap: 16px; }
+
+        .nav-link {
+            text-decoration: none;
+            color: #5f6368;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.15s ease;
+        }
+
+        .nav-link:hover { color: #202124; background: #f1f3f4; }
+
+        .nav-link.active {
+            color: #008abf;
+            background: #e8f0fe;
+            font-weight: 600;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* Header Card */
+        .header-card {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #202124;
+        }
+
+        .header-sub {
+            font-size: 0.88rem;
+            color: #5f6368;
+            margin-top: 4px;
+        }
+
+        .stats-summary { display: flex; gap: 16px; }
+
+        .stat-badge {
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 10px 18px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .stat-val { font-size: 1.25rem; font-weight: 700; color: #008abf; }
+
+        .stat-lbl {
+            font-size: 0.72rem;
+            color: #5f6368;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Section Headings */
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #202124;
+            margin: 35px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Group / Cluster Card */
+        .group-card {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.05);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f3f4;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .group-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1a73e8;
+        }
+
+        .group-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .group-img-box {
+            width: 110px;
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .group-img-box img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .group-img-box img:hover { transform: scale(1.05); }
+
+        .group-img-box .caption {
+            font-size: 0.75rem;
+            color: #5f6368;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Top pairs */
+        .top-pairs-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 30px;
+        }
+
+        .top-pair-card {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.05);
+        }
+
+        .top-pair-rank {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #9aa0a6;
+            width: 24px;
+            flex-shrink: 0;
+        }
+
+        .top-pair-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid #dadce0;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .top-pair-thumb:hover { transform: scale(1.06); }
+
+        .top-pair-names {
+            flex: 1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .top-pair-names .sep { color: #9aa0a6; }
+
+        .match-badge {
+            display: inline-block;
+            background: #e6f4ea;
+            color: #137333;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Matrix */
+        .table-container {
+            background: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 10px;
+            overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.05);
+        }
+
+        table.dataset-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+
+        table.dataset-table th, table.dataset-table td {
+            padding: 8px 10px;
+            border: 1px solid #f1f3f4;
+        }
+
+        table.dataset-table th {
+            background: #f8f9fa;
+            color: #3c4043;
+            font-weight: 600;
+        }
+
+        .matrix-thumb {
+            width: 34px;
+            height: 34px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #dadce0;
+            display: block;
+            margin: 0 auto 4px;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .matrix-thumb:hover { transform: scale(1.15); }
+
+        .matrix-head-label {
+            font-size: 0.7rem;
+            color: #5f6368;
+            font-weight: 600;
+        }
+
+        .matrix-row-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .matrix-row-head .matrix-thumb { margin: 0; }
+
+        .matrix-cell {
+            min-width: 60px;
+            padding: 8px !important;
+            vertical-align: middle;
+        }
+
+        .matrix-score {
+            display: inline-block;
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #3c4043;
+        }
+
+        .self-td { background: #f8f9fa; color: #9aa0a6; }
+
+        .btn-primary {
+            display: inline-block;
+            background: #008abf;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .btn-primary:hover { background: #0075a3; }
+
+        /* Image preview overlay */
+        .img-preview-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(32, 33, 36, 0.75);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .img-preview-overlay img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        MUSE <span>ART</span>
+    </a>
+    <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/score/explore/" class="nav-link">Explore Art</a>
+        <a href="/score/batch/" class="nav-link active">Analyze Art</a>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div class="header-card">
+        <div>
+            <h1 class="header-title">Style Similarity Results</h1>
+            <p class="header-sub">Similarity score breakdown at threshold of <strong>{{ results.threshold }}%</strong></p>
+        </div>
+
+        <div class="stats-summary">
+            <div class="stat-badge">
+                <div class="stat-val">{{ results.total_images }}</div>
+                <div class="stat-lbl">Artworks</div>
+            </div>
+            <div class="stat-badge">
+                <div class="stat-val">{{ results.groups|length }}</div>
+                <div class="stat-lbl">Clusters</div>
+            </div>
+            <div class="stat-badge">
+                <div class="stat-val">{{ results.similar_pairs|length }}</div>
+                <div class="stat-lbl">Pairs</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Clusters -->
+    <div class="section-heading">🎨 Matching Style Clusters</div>
+    {% if results.groups %}
+        {% for group in results.groups %}
+        <div class="group-card">
+            <div class="group-header">
+                <div class="group-name">{{ group.name }} ({{ group.images|length }} Similar Artworks)</div>
+                <span class="match-badge">Style Cluster</span>
+            </div>
+            <div class="group-gallery">
+                {% for img in group.images %}
+                <div class="group-img-box">
+                    <img class="preview-thumb" src="{{ img.url }}" alt="{{ img.name }}">
+                    <div style="font-weight: 600; font-size: 0.8rem; color: #202124;">Img #{{ img.index }}</div>
+                    <div class="caption" title="{{ img.name }}">{{ img.name }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="group-card" style="text-align: center; color: #5f6368; padding: 30px;">
+            No distinct clusters found matching or exceeding the {{ results.threshold }}% similarity threshold.
+        </div>
+    {% endif %}
+
+    <!-- Section: Top 5 Similar Pairs -->
+    <div class="section-heading">🔗 Top 5 Similar Image Pairs</div>
+    {% if results.similar_pairs %}
+    <div class="top-pairs-grid">
+        {% for pair in results.similar_pairs|slice:":5" %}
+        <div class="top-pair-card">
+            <div class="top-pair-rank">#{{ forloop.counter }}</div>
+            <img class="top-pair-thumb preview-thumb" src="{{ pair.image1.url }}" alt="{{ pair.image1.name }}">
+            <img class="top-pair-thumb preview-thumb" src="{{ pair.image2.url }}" alt="{{ pair.image2.name }}">
+            <div class="top-pair-names">
+                <span><strong>Img #{{ pair.image1.index }}</strong> ({{ pair.image1.name }})</span>
+                <span class="sep">↔</span>
+                <span><strong>Img #{{ pair.image2.index }}</strong> ({{ pair.image2.name }})</span>
+            </div>
+            <span class="match-badge">{{ pair.similarity }}% Match</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p style="color: #5f6368; margin-bottom: 20px;">No image pairs met the threshold of {{ results.threshold }}%.</p>
+    {% endif %}
+
+    <!-- Section: Matrix -->
+    <div class="section-heading">📋 All-Pairs Similarity Matrix</div>
+    <div class="table-container">
+        <table class="dataset-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    {% for img in results.image_list %}
+                    <th>
+                        <img class="matrix-thumb preview-thumb" src="{{ img.url }}" alt="{{ img.name }}">
+                        <div class="matrix-head-label">#{{ img.index }}</div>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results.similarity_matrix %}
+                {% with outer_index=forloop.counter0 row_num=forloop.counter %}
+                <tr>
+                    <th>
+                        <div class="matrix-row-head">
+                            {% for rimg in results.image_list %}{% if forloop.counter0 == outer_index %}<img class="matrix-thumb preview-thumb" src="{{ rimg.url }}" alt="{{ rimg.name }}">{% endif %}{% endfor %}
+                            <span class="matrix-head-label">#{{ row_num }}</span>
+                        </div>
+                    </th>
+                    {% for score in row %}
+                    {% with inner_index=forloop.counter0 %}
+                    <td class="matrix-cell {% if outer_index == inner_index %}self-td{% endif %}">
+                        {% if score >= results.threshold and outer_index != inner_index %}
+                            <span class="match-badge matrix-score">{{ score }}%</span>
+                        {% elif outer_index == inner_index %}
+                            —
+                        {% else %}
+                            <span class="matrix-score">{{ score }}%</span>
+                        {% endif %}
+                    </td>
+                    {% endwith %}
+                    {% endfor %}
+                </tr>
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 35px; margin-bottom: 50px;">
+        <a href="{% url 'batch_upload' %}" class="btn-primary">Start New Analysis</a>
+    </div>
+</div>
+
+<!-- Image preview overlay -->
+<div class="img-preview-overlay" id="img-preview-overlay">
+    <img id="img-preview-img" src="" alt="Preview">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var overlay = document.getElementById('img-preview-overlay');
+        var previewImg = document.getElementById('img-preview-img');
+
+        document.querySelectorAll('.preview-thumb').forEach(function (thumb) {
+            thumb.addEventListener('click', function (e) {
+                e.stopPropagation();
+                previewImg.src = thumb.src;
+                overlay.style.display = 'flex';
+            });
+        });
+
+        // Clicking anywhere in the overlay that is NOT the enlarged image closes the preview.
+        overlay.addEventListener('click', function (e) {
+            if (e.target !== previewImg) {
+                overlay.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
