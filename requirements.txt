@@ -1,7 +1,10 @@
 Django>=6.0,<6.2
 celery[redis]>=5.6,<6.0
 Pillow>=12,<13
-torchvision
+dj-database-url>=2.3,<4
+gunicorn>=23,<24
+psycopg2-binary>=2.9,<3
+whitenoise>=6.9,<7
 # CPU-only PyTorch wheels for the current Linux environment.
 # For CUDA, replace these with the command from https://pytorch.org/get-started/locally/.
 --extra-index-url https://download.pytorch.org/whl/cpu
